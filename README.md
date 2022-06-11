@@ -84,6 +84,7 @@ class Validator{
 }
 class AccountValidator{
     exist_a_valid_account()
+    Account account
 }
 class TransactionValidator{
     account: Account
