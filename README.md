@@ -104,13 +104,15 @@ class Account{
     disbursment(amount)
 }
 class Transaction{
-    amount: int
-    merchant: str
-    timestamp: datetime
+    int amount
+    str merchant
+    datetime timestamp
+    Account account 
 }
 TransactionValidator o--Transaction
 TransactionValidator o-- Account
 AccountValidator o-- Account
+Transaction o-- Account
 Validator <|-- AccountValidator
 Validator <|-- TransactionValidator
 Authorizator --* TransactionValidator
