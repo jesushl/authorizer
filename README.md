@@ -101,6 +101,7 @@ class Account{
     is_active: bool
     available_limit: int
     __init__(<json_account>)
+    disbursment(amount)
 }
 class Transaction{
     amount: int
