@@ -9,15 +9,15 @@ class Validator(ABC):
         """
         self.violations = list()
     
-    @abstractmethod
+    
     def get_status(self) -> list:
         return self.violations
 
-    @abstractmethod
+    
     def add_violation(self, violation: str):
         self.violations.append(violation)
     
-    @abstractmethod
+    
     def verify(self):
         """
         All childs of validator should implements a method
