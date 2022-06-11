@@ -66,5 +66,53 @@ As database is not abailable, a concept as documents in noSQL is very used with 
 
 ### Clases
 
+```mermaid
+    classDiagram
+class Authorizator {
+  str input_arg
+  TransactionValidator transaction_validator
+  AccountValidator account_validator
+  read_args()
+  validate_account()
+  validate_transaction()
+  return_account_status()
+  return_transaction_status()
+}
+class Validator{
+    violations: list <str>
+    get_status()
+}
+class AccountValidator{
+    exist_a_valid_account()
+}
+class TransactionValidator{
+    account: Account
+    transaction_history: list<Transaction>
+    set_account()
+    verify_initialized_account()
+    verify_card_active()
+    verify_limit()
+    verify_hight_frecuency_interval()
+    verify_dobled_transaction()
+    verify()
+
+}
+class Account{
+    is_active: bool
+    available_limit: int
+    __init__(<json_account>)
+}
+class Transaction{
+    amount: int
+    merchant: str
+    timestamp: datetime
+}
+TransactionValidator o--Transaction
+TransactionValidator o-- Account
+AccountValidator o-- Account
+Validator <|-- AccountValidator
+Validator <|-- TransactionValidator
+Authorizator --* TransactionValidator
+Authorizator --* AccountValidator
 ```
-```
+x
