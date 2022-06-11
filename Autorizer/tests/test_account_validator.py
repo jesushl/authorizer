@@ -18,11 +18,28 @@ class TestAccountValidator(TestCase):
         self.account_validator = AccountValidator()
 
     def test_exist_a_valid_account(self):
-        self.assertFalse(
-            self.account_validator.exists_a_valid_account()
+        self.assertTrue(
+            self.account_validator.not_exists_a_valid_account()
         )
         self.account_validator.account = self.valid_account
-        self.assertTrue(
-            self.account_validator.exists_a_valid_account()
+        self.assertFalse(
+            self.account_validator.not_exists_a_valid_account()
         )
         
+    def test_verify(self):
+        self.assertListEqual(
+            self.account_validator.verify(),
+            ["account-not-initialized"]
+        )
+        self.account_validator = AccountValidator()
+        self.account_validator.account = "Account"
+        self.assertListEqual(
+            self.account_validator.verify(),
+            ["account-not-initialized"]
+        )
+        self.account_validator = AccountValidator()
+        self.account_validator.account = self.valid_account
+        self.assertListEqual(
+            self.account_validator.verify(),
+            []
+        )

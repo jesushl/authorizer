@@ -12,14 +12,17 @@ class AccountValidator(Validator):
         and error messages 
         """
         validators = {
-            self.exists_a_valid_account: "account-not-initialized"
+            self.not_exists_a_valid_account: "account-not-initialized"
         }
         for validator in validators:
-            if validator():
+            _ = validator()
+            if _:
                 self.violations.append(validators[validator])
+        return self.violations
 
-    def exists_a_valid_account(self):
+    def not_exists_a_valid_account(self):
         if self.account:
             if isinstance(self.account, Account):
-                return True
-        return False
+                return False
+        return True
+     
