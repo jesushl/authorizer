@@ -81,14 +81,17 @@ class Authorizator {
 class Validator{
     violations: list <str>
     get_status()
+    verify()
 }
 class AccountValidator{
-    exist_a_valid_account()
+    exists_a_valid_account()
+    verify()
     Account account
 }
 class TransactionValidator{
     account: Account
-    transaction_history: list<Transaction>
+    Transaction transaction
+    List <Transaction> historic_transactions
     set_account()
     verify_initialized_account()
     verify_card_active()
