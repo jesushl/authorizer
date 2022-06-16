@@ -1,4 +1,3 @@
-import imp
 from unittest import TestCase
 # Models
 from account import Account
