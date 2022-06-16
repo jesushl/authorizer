@@ -1,19 +1,18 @@
 from validator import Validator
 from account import Account
 
+
 class AccountValidator(Validator):
     def __init__(self):
         super().__init__()
         self.account = None
-        
+
     def verify(self):
         """
         This method apply a list of verifications to implement
-        and error messages 
+        and error messages
         """
-        validators = {
-            self.not_exists_a_valid_account: "account-not-initialized"
-        }
+        validators = {self.not_exists_a_valid_account: "account-not-initialized"}
         for validator in validators:
             _ = validator()
             if _:
@@ -25,4 +24,3 @@ class AccountValidator(Validator):
             if isinstance(self.account, Account):
                 return False
         return True
-     
