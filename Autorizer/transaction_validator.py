@@ -28,9 +28,12 @@ class TransactionValidator(Validator):
     def set_historic_transactions(self, historic_transactions: list):
         self.historic_transactions=historic_transactions
     
-    def is_initialized_account(self):
+    def has_initialized_account(self):
         if self.account:
             if isinstance(self.account, Account):
+                if self.transaction:
+                    if not self.transaction.account:
+                        self.transaction.account = self.account
                 return True 
         return False
 
