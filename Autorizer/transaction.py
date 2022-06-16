@@ -18,3 +18,20 @@ class Transaction:
 
     def set_account(self, account: Account):
         self.account = account
+
+    def __repr__(self) -> str:
+        _merchant = "\"merchant\": \"{self.merchant}\", "
+        _amount = "\"amount\": {self.amount}, "
+        _time = "\"time\": \"{self.time}\""
+        _t = _merchant + _amount + _time
+        _t = _t.format(self=self)
+        return "{\"transaction\": {" + _t + "}}"
+    
+    def __str__(self) -> str:
+        _merchant = "\"merchant\": \"{self.merchant}\", "
+        _amount = "\"amount\": {self.amount}, "
+        _time = "\"time\": \"{self.time}\", "
+        _account = "\"account\": \"{self.account}\""
+        _t = _merchant + _amount + _time + _account
+        _t = _t.format(self=self)
+        return "{\"transaction\": {" + _t + "}}"

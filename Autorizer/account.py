@@ -11,3 +11,9 @@ class Account:
             return False
         else:
             self.available_limit = self.available_limit - amount
+
+    def __repr__(self) -> str:
+        return """
+            active: {self.active_card}
+            limit: {self.available_limit}
+            """.format(self=self)
