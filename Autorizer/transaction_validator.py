@@ -40,10 +40,11 @@ class TransactionValidator(Validator):
         return False
 
     def is_card_active(self):
-        if self.account.active_card:
-            return True
-        else:
-            return False
+        if self.account:
+            print(self.account)
+            if self.account.active_card:
+                return True
+        return False
 
     def is_in_limit(self):
         _account_balance = self.account.available_limit

@@ -18,8 +18,14 @@ class TestTransactionValidator(TestCase):
         self.delta_30_s = timedelta(seconds=30)
         self.delta_10_s = timedelta(seconds=10)
         self.delta_1_m = timedelta(minutes=1)
-        self.valid_account = Account(active_card=True, available_limit=10)
-        self.second_not_valid_account = Account(active_card=True, available_limit=100)
+        self.valid_account = Account(
+            active_card=True, 
+            available_limit=10
+        )
+        self.second_not_valid_account = Account(
+            active_card=False,
+            available_limit=100
+        )
         self.transaction_1_merchant_1 = Transaction(
             merchant=self.merchant_1,
             amount=1,
@@ -30,3 +36,21 @@ class TestTransactionValidator(TestCase):
         self.assertFalse(transaction_validator.has_initialized_account())
         transaction_validator.set_account(self.valid_account)
         self.assertTrue(transaction_validator.has_initialized_account())
+    
+    def test_is_card_active(self):
+        transaction_validator = TransactionValidator()
+        self.assertFalse(
+            transaction_validator.is_card_active()
+        )
+        transaction_validator.set_account(
+            self.second_not_valid_account
+        )
+        self.assertFalse(
+            transaction_validator.is_card_active()
+        )
+        transaction_validator.set_account(
+            self.valid_account
+        )
+        self.assertTrue(
+            transaction_validator.is_card_active()
+        )
