@@ -28,7 +28,15 @@ class TestTransactionValidator(TestCase):
         )
         self.transaction_1_merchant_1 = Transaction(
             merchant=self.merchant_1,
-            amount=1,
+            amount=10,
+        )
+        self.transaction_2 = Transaction(
+            merchant=self.merchant_2,
+            amount=20
+        )
+        self.transaction_3 = Transaction(
+            merchant=self.merchant_3,
+            amount=30
         )
 
     def test_has_inizialized_account(self):
@@ -52,3 +60,26 @@ class TestTransactionValidator(TestCase):
         self.assertTrue(
             transaction_validator.is_card_active()
         )
+
+    def test_is_in_limit(self):
+        transaction_validator = TransactionValidator()
+        # Account limit 10, transaction 10
+        transaction_validator.set_transaction(
+            self.transaction_1_merchant_1
+        )
+        transaction_validator.set_account(
+            self.valid_account
+        )
+        self.assertTrue(
+            transaction_validator.is_in_limit()
+        )
+        transaction_validator.account.available_limit = (
+            transaction_validator.account.available_limit -
+            transaction_validator.transaction.amount
+        )
+        self.assertFalse(
+            transaction_validator.is_in_limit()
+        )
+    
+    def test_in_limit_for_hight_frecuency_interval(self):
+        pass
