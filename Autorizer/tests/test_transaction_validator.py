@@ -48,9 +48,7 @@ class TestTransactionValidator(TestCase):
         self.assertFalse(
             transaction_validator.is_card_active()
         )
-        transaction_validator.set_account(
-            self.valid_account
-        )
+        transaction_validator.account = self.valid_account
         self.assertTrue(
             transaction_validator.is_card_active()
         )

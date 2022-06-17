@@ -41,7 +41,6 @@ class TransactionValidator(Validator):
 
     def is_card_active(self):
         if self.account:
-            print(self.account)
             if self.account.active_card:
                 return True
         return False
