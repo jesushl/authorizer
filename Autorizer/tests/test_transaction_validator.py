@@ -57,12 +57,6 @@ class TestTransactionValidator(TestCase):
             transaction_validator.is_card_active()
         )
         transaction_validator.account = self.valid_account
-<<<<<<< HEAD
-    
-        self.assertTrue(
-            transaction_validator.is_card_active()
-        )
-=======
         self.assertTrue(
             transaction_validator.is_card_active()
         )
@@ -89,4 +83,3 @@ class TestTransactionValidator(TestCase):
     
     def test_in_limit_for_hight_frecuency_interval(self):
         pass
->>>>>>> c286e77c568a1b28171256e9d82759a4df857d46
