@@ -2,8 +2,6 @@ from time import time
 from unittest import TestCase
 from datetime import date, datetime, timedelta
 
-from send2trash import TrashPermissionError
-
 # Models
 from account import Account
 from transaction import Transaction
