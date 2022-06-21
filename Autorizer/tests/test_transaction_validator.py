@@ -1,5 +1,8 @@
+from time import time
 from unittest import TestCase
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
+
+from send2trash import TrashPermissionError
 
 # Models
 from account import Account
@@ -82,4 +85,77 @@ class TestTransactionValidator(TestCase):
         )
     
     def test_in_limit_for_hight_frecuency_interval(self):
-        pass
+        transaction_validator = TransactionValidator()
+        now = datetime.now()
+        t1 = Transaction(time=now)
+        t2 = Transaction(time=now + timedelta(seconds=10))
+        t3 = Transaction(time=now + timedelta(seconds=20))
+        time_limit = transaction_validator.hight_frecuency_interval
+        historic  = [t1, t2]
+        transaction_validator.set_historic_transactions(historic)
+        transaction_validator.set_transaction(t3)
+        self.assertFalse(
+            transaction_validator.in_limit_for_hight_frecuency_interval()
+         )
+        t3.time = now + timedelta(minutes=2)
+        self.assertFalse(
+            transaction_validator.in_limit_for_hight_frecuency_interval()
+        )
+        t3.time = now + timedelta(minutes=2, seconds=10)
+        self.assertTrue(
+            transaction_validator.in_limit_for_hight_frecuency_interval()
+        )
+        t3.time = now + timedelta(minutes=2, seconds=11)
+        self.assertTrue(
+            transaction_validator.in_limit_for_hight_frecuency_interval()
+        )
+        transaction_validator.set_historic_transactions([])
+        transaction_validator.set_transaction(t3)
+        self.assertTrue(
+            transaction_validator.in_limit_for_hight_frecuency_interval()
+        )
+
+    def test_in_limit_to_not_dobled_transaction(self):
+        merchant_1 = "merchant_1"
+        merchant_2 = "merchant_2"
+        amount_1 = 1
+        amount_2 = 2
+        now = datetime.now()
+        t_plus_one_minute = now + timedelta(minutes=1)
+        t_plus_two_minuntes = now + timedelta(minutes=2)
+        t_plus_two_minuntes_one_second = t_plus_two_minuntes + timedelta(seconds=1)
+        t1 = Transaction(
+            merchant=merchant_1,
+            amount=amount_1,
+            time=now
+        )
+        t2_not_valid = Transaction(
+            merchant=merchant_1,
+            amount=amount_1,
+            time=t_plus_one_minute
+        )
+        t3_not_valid = Transaction(
+            merchant=merchant_1,
+            amount=amount_1,
+            time=t_plus_two_minuntes
+        )
+        t4_valid = Transaction(
+            merchant=merchant_1,
+            amount=amount_1,
+            time=t_plus_two_minuntes_one_second
+        )
+        t5_valid = Transaction(
+            merchant=merchant_2,
+            amount=amount_2,
+            time=t_plus_one_minute
+        )
+        transaction_validator = TransactionValidator()
+        transaction_validator.set_historic_transactions(
+            [t1]
+        )
+        transaction_validator.set_transaction(
+            t2_not_valid
+        )
+        self.assertFalse(
+            transaction_validator.in_limit_to_not_dobled_transaction()
+        )

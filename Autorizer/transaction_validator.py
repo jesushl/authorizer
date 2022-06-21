@@ -60,12 +60,19 @@ class TransactionValidator(Validator):
             return True
 
     def in_limit_for_hight_frecuency_interval(self)->bool:
+        """
+        There should be no more than 3 transactions within a 2 minutes interval
+        * Can be configure with  class values :
+            hight_frecuency_interval
+            hight_frecuency_interval_transactionsal 
+
+        """
         if len(self.historic_transactions) > 1:
             # Takes the second transaction before current one
             _prev_sec_transactions = self.historic_transactions[-self.hight_frecuency_interval_transactions]
             _time_laps_pass_limit = _prev_sec_transactions.time
             _current_time = self.transaction.time
-            if ((_current_time - _time_laps_pass_limit) < self.hight_frecuency_interval):
+            if ((_current_time - _time_laps_pass_limit) > self.hight_frecuency_interval):
                 return True
             else:
                 return False
@@ -80,9 +87,9 @@ class TransactionValidator(Validator):
         time_limit = self.transaction.time - self.dobled_transaction_interval
         # This index ignores current transaction that should be set before run this
         transaction_index = len(self.historic_transactions) - 2
-        while transaction_index > 0:
+        while transaction_index >= 0:
             c_transaction  = self.historic_transactions[transaction_index]
-            if c_transaction.time < time_limit:
+            if c_transaction.time > time_limit:
                 return True
             if (
                 c_transaction.merchant == self.transaction.merchant
