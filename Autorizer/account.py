@@ -16,4 +16,6 @@ class Account:
         return """
             active: {self.active_card}
             limit: {self.available_limit}
-            """.format(self=self)
+            """.format(
+            self=self
+        )
