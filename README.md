@@ -81,13 +81,17 @@ class Authorizator {
 class Validator{
     violations: list <str>
     get_status()
+    verify()
 }
 class AccountValidator{
-    exist_a_valid_account()
+    exists_a_valid_account()
+    verify()
+    Account account
 }
 class TransactionValidator{
     account: Account
-    transaction_history: list<Transaction>
+    Transaction transaction
+    List <Transaction> historic_transactions
     set_account()
     verify_initialized_account()
     verify_card_active()
@@ -101,15 +105,18 @@ class Account{
     is_active: bool
     available_limit: int
     __init__(<json_account>)
+    disbursment(amount)
 }
 class Transaction{
-    amount: int
-    merchant: str
-    timestamp: datetime
+    int amount
+    str merchant
+    datetime timestamp
+    Account account 
 }
 TransactionValidator o--Transaction
 TransactionValidator o-- Account
 AccountValidator o-- Account
+Transaction o-- Account
 Validator <|-- AccountValidator
 Validator <|-- TransactionValidator
 Authorizator --* TransactionValidator
