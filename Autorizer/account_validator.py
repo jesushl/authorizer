@@ -1,6 +1,8 @@
 from validator import Validator
 from account import Account
 
+# Account validation messages
+ACCOUNT_NOT_INITIALIZED="account-not-initialized"
 
 class AccountValidator(Validator):
     def __init__(self):

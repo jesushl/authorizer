@@ -5,6 +5,10 @@ from validator import Validator
 from transaction import Transaction
 from account import Account
 
+CARD_NOT_ACTIVE="card-not-active"
+INSUFICIENT_LIMIT="insuficient-limit"
+HIGH_FRECUENCY_SMALL_INTERVAL="high-frequency-smallinterval"
+DOUBLED_TRANSACTION="doubled-transaction"
 
 class TransactionValidator(Validator):
     def __init__(self):
