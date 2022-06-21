@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from selectors import EpollSelector
 from validator import Validator
 
 # Models
@@ -89,12 +88,16 @@ class TransactionValidator(Validator):
         transaction_index = len(self.historic_transactions) - 2
         while transaction_index >= 0:
             c_transaction  = self.historic_transactions[transaction_index]
-            if c_transaction.time > time_limit:
+            if c_transaction.time >= time_limit:      
+                if (
+                    c_transaction.merchant == self.transaction.merchant
+                    and 
+                    c_transaction.amount == self.transaction.amount
+                ):
+                    
+                    # import pdb; pdb.set_trace()
+                    return False
+            else:
                 return True
-            if (
-                c_transaction.merchant == self.transaction.merchant
-                and 
-                c_transaction.amount == self.transaction.merchant
-            ):
-                return False
+            transaction_index = transaction_index - 1
         return True

@@ -123,7 +123,7 @@ class TestTransactionValidator(TestCase):
         now = datetime.now()
         t_plus_one_minute = now + timedelta(minutes=1)
         t_plus_two_minuntes = now + timedelta(minutes=2)
-        t_plus_two_minuntes_one_second = t_plus_two_minuntes + timedelta(seconds=1)
+        t_plus_two_minuntes_one_second = now + timedelta(minutes=2, seconds=1)
         t1 = Transaction(
             merchant=merchant_1,
             amount=amount_1,
@@ -140,7 +140,7 @@ class TestTransactionValidator(TestCase):
             time=t_plus_two_minuntes
         )
         t4_valid = Transaction(
-            merchant=merchant_1,
+            merchant=merchant_2,
             amount=amount_1,
             time=t_plus_two_minuntes_one_second
         )
@@ -157,5 +157,17 @@ class TestTransactionValidator(TestCase):
             t2_not_valid
         )
         self.assertFalse(
+            transaction_validator.in_limit_to_not_dobled_transaction()
+        )   
+        transaction_validator.transaction = t3_not_valid
+        self.assertFalse(
+            transaction_validator.in_limit_to_not_dobled_transaction()
+        )
+        transaction_validator.transaction=t4_valid
+        self.assertTrue(
+            transaction_validator.in_limit_to_not_dobled_transaction()
+        )
+        transaction_validator.transaction=t5_valid
+        self.assertTrue(
             transaction_validator.in_limit_to_not_dobled_transaction()
         )
