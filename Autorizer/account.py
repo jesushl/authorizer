@@ -1,6 +1,3 @@
-from xmlrpc.client import boolean
-
-
 class Account:
     def __init__(self, active_card=False, available_limit=0):
         self.active_card = active_card

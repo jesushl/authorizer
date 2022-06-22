@@ -1,30 +1,46 @@
+# utils
 from datetime import datetime, timedelta
-from validator import Validator
-
+# thread
+import threading
 # Models
 from transaction import Transaction
 from account import Account
+from validator import Validator
 
+ACCOUNT_NOT_INITIALIZED = "account-not-initialized"
 CARD_NOT_ACTIVE="card-not-active"
 INSUFICIENT_LIMIT="insuficient-limit"
-HIGH_FRECUENCY_SMALL_INTERVAL="high-frequency-smallinterval"
+HIGH_FRECUENCY_SMALL_INTERVAL="high-frequency-small-interval"
 DOUBLED_TRANSACTION="doubled-transaction"
 
 class TransactionValidator(Validator):
+    # Uses Threads for every validation
     def __init__(self):
         super().__init__()
-        self.account = None
-        self.transaction = None
-        self.historic_transactions = []
-        self.hight_frecuency_interval = timedelta(minutes=2)
-        self.hight_frecuency_interval_transactions = 3
-        self.dobled_transaction_interval = timedelta(minutes=2)
+        self.account: Account = None
+        self.transaction: Transaction = None
+        self.historic_transactions: list = []
+        self.hight_frecuency_interval: timedelta = timedelta(minutes=2)
+        self.hight_frecuency_interval_transactions: int = 3
+        self.dobled_transaction_interval: timedelta = timedelta(minutes=2)
 
     def verify(self):
-        pass
-
-    def verify(self, transaction:Transaction)->list:
-        return super().verify()
+        _is_card_active = threading.Thread(target=self.is_card_active)
+        _in_limit = threading.Thread(self.is_card_active)
+        _in_limit_for_hight_frecuency_interval = threading.Thread(
+            target=self.in_limit_for_hight_frecuency_interval
+       )
+        _in_limit_to_not_dobled_transaction = threading.Thread(
+            target=self.in_limit_to_not_dobled_transaction
+        )
+        _is_card_active.start()
+        _in_limit.start()
+        _in_limit_for_hight_frecuency_interval.start()
+        _in_limit_to_not_dobled_transaction.start()
+        _is_card_active.join()
+        _in_limit.join()
+        _in_limit_for_hight_frecuency_interval.join()
+        _in_limit_to_not_dobled_transaction.join()
 
     def set_account(self, account: Account):
         if self.account:
@@ -47,17 +63,22 @@ class TransactionValidator(Validator):
                     if not self.transaction.account:
                         self.transaction.account = self.account
                 return True
+        self.transaction.add_violation(
+            ACCOUNT_NOT_INITIALIZED
+        )
         return False
 
     def is_card_active(self)->bool:
         if self.account:
             if self.account.active_card:
                 return True
+        self.transaction.add_violation(CARD_NOT_ACTIVE)
         return False
 
     def is_in_limit(self)->bool:
         _account_balance = self.account.available_limit
         if self.transaction.amount > _account_balance:
+            self.transaction.add_violation(INSUFICIENT_LIMIT)
             return False
         else:
             return True
@@ -78,6 +99,7 @@ class TransactionValidator(Validator):
             if ((_current_time - _time_laps_pass_limit) > self.hight_frecuency_interval):
                 return True
             else:
+                self.transaction.add_violation(HIGH_FRECUENCY_SMALL_INTERVAL)
                 return False
         else:
             return True
@@ -98,6 +120,7 @@ class TransactionValidator(Validator):
                     and 
                     c_transaction.amount == self.transaction.amount
                 ):  
+                    self.transaction.add_violation(DOUBLED_TRANSACTION)
                     return False
             else:
                 return True
