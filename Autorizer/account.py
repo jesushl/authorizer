@@ -10,7 +10,11 @@ class Account:
     def disbursment(self, amount) -> boolean:
         if amount > self.available_limit:
             return False
-        else:
+        elif (
+                amount > self.available_limit 
+                and 
+                self.active_card
+            ):
             self.available_limit = self.available_limit - amount
 
     def __repr__(self) -> str:
