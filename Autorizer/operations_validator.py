@@ -25,6 +25,7 @@ class OperationsValidator():
         self.date_format = "%Y-%m-%dT%H:%M:%S.%fZ" 
 
     def validate_operations(self, operations: list):
+        actions_applied = []
         for operation in operations:
             # transactions should be the most common operation
             transaction = operation.get(self.kind_transction, None)
@@ -38,11 +39,9 @@ class OperationsValidator():
                     amount=transaction.get("amount"),
                     time=c_time
                 )
-                if self.transaction_validator.account:
-                    # Set account relation into transaction
-                    c_transaction.set_account(self.transaction_validator.account)
                 self.transaction_validator.set_transaction(c_transaction)
-                
+                self.transaction_validator.verify()
+                actions_applied.append(c_transaction)
             else:
                 account = operation.get(self.kind_account, None)
                 if account:
