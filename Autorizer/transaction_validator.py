@@ -17,9 +17,9 @@ DOUBLED_TRANSACTION="doubled-transaction"
 
 class TransactionValidator(Validator):
     # Uses Threads for every validation
-    def __init__(self):
+    def __init__(self, account:Account=Account()):
         super().__init__()
-        self.account: Account = None
+        self.account: Account = account
         self._account_operation = None
         self.transaction: Transaction = None
         self.historic_transactions: list = []
@@ -70,10 +70,11 @@ class TransactionValidator(Validator):
     def has_initialized_account(self)->bool:
         if self.account:
             if isinstance(self.account, Account):
-                if self.transaction:
-                    if not self.transaction.account:
-                        self.transaction.account = self.account
-                return True
+                if self.account.initialized:
+                    if self.transaction:
+                        if not self.transaction.account:
+                            self.transaction.account = self.account
+                    return True
         self._account_operation.add_violation(
             ACCOUNT_NOT_INITIALIZED
         )
