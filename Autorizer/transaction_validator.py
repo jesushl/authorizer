@@ -92,6 +92,7 @@ class TransactionValidator(Validator):
         if self.transaction.amount > _account_balance:
             self._account_operation.add_violation(INSUFICIENT_LIMIT)
             return False
+
         return True
 
     def in_limit_for_hight_frecuency_interval(self)->bool:
@@ -102,17 +103,16 @@ class TransactionValidator(Validator):
             hight_frecuency_interval_transactionsal 
 
         """
-        if len(self.historic_transactions) >= self.hight_frecuency_interval_transactions:
-            _prev_sec_transactions = self.historic_transactions[-self.hight_frecuency_interval_transactions]
-            _time_laps_pass_limit = _prev_sec_transactions.time
-            _current_time = self.transaction.time
-            if ((_current_time - _time_laps_pass_limit) > self.hight_frecuency_interval):
-                return True
-            else:
-                self._account_operation.add_violation(HIGH_FRECUENCY_SMALL_INTERVAL)
-                return False
-        else:
+        # His can be change it  for a query
+        historic_success_transactions_in_lapse_time = self.get_last_succesfull_transactions_history(
+            recent_time=self.transaction.time,
+            time_lapse=self.hight_frecuency_interval
+        )
+        if not historic_success_transactions_in_lapse_time:
             return True
+        else:
+            self._account_operation.add_violation(HIGH_FRECUENCY_SMALL_INTERVAL)
+            return False
 
     def in_limit_to_not_dobled_transaction(self)->bool:
         """
@@ -139,3 +139,16 @@ class TransactionValidator(Validator):
 
     def get_current_account_operation(self):
         return self._account_operation
+
+    def get_last_succesfull_transactions_history(self, recent_time: datetime, time_lapse: timedelta):
+        index = -2
+        success_historic = []
+        while index >= -len(self.historic_transactions):
+            i_transaction =self.historic_transactions[index]
+            if (recent_time - i_transaction.time) <= time_lapse:
+                if i_transaction.applied:# add it if is success
+                    success_historic.append(self.historic_transactions)
+            else:
+                break
+            index = index - 1
+        return success_historic

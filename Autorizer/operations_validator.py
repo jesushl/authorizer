@@ -49,11 +49,10 @@ class OperationsValidator():
         self.transaction_validator.set_transaction(c_transaction)
         _account_operation = self.transaction_validator.verify()
         if not _account_operation.violations:
-            self.transaction_validator.account.disbursment(
-                c_transaction.amount
-            )
-            _account_operation.disbursment(
-                c_transaction.amount
+            self.apply_transaction(
+                account=self.transaction_validator.account,
+                meta_account=_account_operation,
+                transaction=c_transaction
             )
         self.actions_log.append(_account_operation)
 
@@ -65,5 +64,7 @@ class OperationsValidator():
             self.transaction_validator.set_account(_c_account)
         self.actions_log.append(self.account_validator.meta_account)
             
-
-            
+    def apply_transaction(self, account: Account, meta_account: Account, transaction: Transaction):
+        account.disbursment(transaction.amount)
+        meta_account.disbursment(transaction.amount) 
+        transaction.applied = True

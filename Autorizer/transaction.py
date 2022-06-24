@@ -14,6 +14,7 @@ class Transaction:
         self.amount = amount
         self.time = time
         self.account = None
+        self.applied = False
         self.violations = []
 
     def add_violation(self, violation: str)->None:

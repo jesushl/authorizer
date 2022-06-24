@@ -76,3 +76,30 @@ class TestOperationsValidator(TestCase):
             '{"account": {"active-card": false, "available-limit": 100}, "violations": ["card-not-active"]}',
             str(logs[2])
         )
+
+    def test_insufficient_limit(self):
+        operation_example = json.load(
+            open('tests/text_examples/test_example_input_4.txt')
+        )
+        operations_validator = OperationsValidator()
+        operations_validator.validate_operations(operations=operation_example)
+        logs = operations_validator.actions_log
+        from pprint import pprint
+        pprint(operation_example)
+        pprint(logs)
+        self.assertEqual(
+            '{"account": {"active-card": true, "available-limit": 1000}, "violations": []}',
+            str(logs[0])
+        )
+        self.assertEqual(
+            '{"account": {"active-card": true, "available-limit": 1000}, "violations": ["insufficient-limit"]}',
+            str(logs[1])
+        )
+        self.assertEqual(
+            '{"account": {"active-card": true, "available-limit": 1000}, "violations": ["insufficient-limit"]}',
+            str(logs[2])
+        )
+        self.assertEqual(
+            '{"account": {"active-card": true,"available-limit": 200}, "violations": []}',
+            str(logs[3])
+        )
