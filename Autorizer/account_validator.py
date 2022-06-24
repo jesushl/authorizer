@@ -7,22 +7,29 @@ ACCOUNT_NOT_INITIALIZED="account-not-initialized"
 class AccountValidator(Validator):
     def __init__(self):
         super().__init__()
-        self.account = None
+        self.account: Account = None
 
     def verify(self):
         """
         This method apply a list of verifications to implement
         and error messages
         """
-        validators = {self.not_exists_a_valid_account: "account-not-initialized"}
+        validators = {self.is_valid_account: "account-not-initialized"}
         for validator in validators:
             _ = validator()
             if _:
                 self.violations.append(validators[validator])
         return self.violations
 
-    def not_exists_a_valid_account(self):
+    def is_valid_account(self):
         if self.account:
             if isinstance(self.account, Account):
-                return False
-        return True
+                return True
+        return False
+
+    def is_initiated(self):
+        if self.is_valid_account():
+            if self.account.initialized:
+                return True 
+        self.account.add_violation(ACCOUNT_NOT_INITIALIZED)
+        return False

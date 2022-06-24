@@ -14,9 +14,9 @@ class TestAccountValidator(TestCase):
         self.account_validator = AccountValidator()
 
     def test_exist_a_valid_account(self):
-        self.assertTrue(self.account_validator.not_exists_a_valid_account())
+        self.assertFalse(self.account_validator.is_valid_account())
         self.account_validator.account = self.valid_account
-        self.assertFalse(self.account_validator.not_exists_a_valid_account())
+        self.assertTrue(self.account_validator.is_valid_account())
 
     def test_verify(self):
         self.assertListEqual(
