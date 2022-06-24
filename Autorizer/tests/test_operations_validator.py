@@ -64,3 +64,15 @@ class TestOperationsValidator(TestCase):
         operations_validator = OperationsValidator()
         operations_validator.validate_operations(operations=operation_example)
         logs = operations_validator.actions_log
+        self.assertEqual(
+            '{"account": {"active-card": false, "available-limit": 100}, "violations": []}',
+            str(logs[0])
+        )
+        self.assertEqual(
+            '{"account": {"active-card": false, "available-limit": 100}, "violations": ["card-not-active"]}',
+            str(logs[1])
+        )
+        self.assertEqual(
+            '{"account": {"active-card": false, "available-limit": 100}, "violations": ["card-not-active"]}',
+            str(logs[2])
+        )
