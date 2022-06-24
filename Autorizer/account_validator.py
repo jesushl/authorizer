@@ -12,6 +12,7 @@ class AccountValidator(Validator):
     
     def set_account(self, account: Account):
         self.account = account
+        self.meta_account = self.account.metadata_copy()
 
     def verify(self):
         """

@@ -1,7 +1,7 @@
 # utils
 from datetime import datetime
 # Models
-from account import Account
+from account import Account, account_from_dict
 from account_validator import AccountValidator
 from account_validator import (
     ACCOUNT_NOT_INITIALIZED
@@ -20,17 +20,17 @@ class OperationsValidator():
     def __init__(self):
         self.transaction_validator = TransactionValidator()
         self.account_validator = AccountValidator()
-        self.kind_transction = "transaction"
+        self.kind_transaction = "transaction"
         self.kind_account = "account"
         self.date_format = "%Y-%m-%dT%H:%M:%S.%fZ" 
         self.actions_log = []
 
     def validate_operations(self, operations: list):
         for operation in operations:
-            pass 
+            self.validate_operation(operation)
 
     def validate_operation(self, operation: dict):
-        transaction = operation.get(self.kind_transction, None)
+        transaction = operation.get(self.kind_transaction, None)
         if transaction:
             self.validate_transaction(transaction)
         else:
@@ -54,5 +54,13 @@ class OperationsValidator():
         self.actions_log.append(_account_operation)
 
     def validate_account(self, account: dict):
-        self.account_validator.account = self.transaction_validator.account
+        if self.account_validator.is_already_initiated():
+            self.actions_log.append(self.account_validator.meta_account)
+        else:
+            _c_account  = account_from_dict(account.get(self.kind_account), None)
+            self.account_validator.set_account(_c_account)
+            self.transaction_validator.set_account(_c_account)
+            self.actions_log.append(self.account_validator.meta_account)
+            
+
             

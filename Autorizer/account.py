@@ -1,4 +1,3 @@
-from os import access
 
 class Account:
     def __init__(self, active_card: bool=None, available_limit: int=None):
@@ -44,3 +43,14 @@ class Account:
             _account_body  = '{}'
         _account = '{"account": {' + _account_body + '}'+ ', ' + _violations + '}' 
         return _account
+
+
+def account_from_dict(
+    account:dict,
+    active_card_key: str='active-card',
+    available_limit_key: str='available-limit'
+):
+    return Account(
+        active_card=account.get(active_card_key, None),
+        available_limit=account.get(available_limit_key, None)
+    )
