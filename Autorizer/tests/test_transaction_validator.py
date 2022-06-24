@@ -30,15 +30,17 @@ class TestTransactionValidator(TestCase):
 
     def test_has_inizialized_account(self):
         transaction_validator = TransactionValidator()
+        transaction_validator._account_operation = transaction_validator.account.metadata_copy()
         self.assertFalse(transaction_validator.has_initialized_account())
-        transaction_validator.set_account(self.valid_account)
+        transaction_validator.account=self.valid_account
         self.assertTrue(transaction_validator.has_initialized_account())
 
     def test_is_card_active(self):
         transaction_validator = TransactionValidator()
         transaction_validator._account_operation = transaction_validator.account.metadata_copy()
         self.assertFalse(transaction_validator.is_card_active())
-        transaction_validator.set_account(self.second_not_valid_account)
+        transaction_validator.account = self.second_not_valid_account
+        transaction_validator._account_operation = transaction_validator.account.metadata_copy()
         self.assertFalse(transaction_validator.is_card_active())
         transaction_validator.account = self.valid_account
         self.assertTrue(transaction_validator.is_card_active())
