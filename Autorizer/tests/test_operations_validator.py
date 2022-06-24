@@ -84,9 +84,6 @@ class TestOperationsValidator(TestCase):
         operations_validator = OperationsValidator()
         operations_validator.validate_operations(operations=operation_example)
         logs = operations_validator.actions_log
-        from pprint import pprint
-        pprint(operation_example)
-        pprint(logs)
         self.assertEqual(
             '{"account": {"active-card": true, "available-limit": 1000}, "violations": []}',
             str(logs[0])
@@ -100,6 +97,38 @@ class TestOperationsValidator(TestCase):
             str(logs[2])
         )
         self.assertEqual(
-            '{"account": {"active-card": true,"available-limit": 200}, "violations": []}',
+            '{"account": {"active-card": true, "available-limit": 200}, "violations": []}',
             str(logs[3])
+        )
+    
+    def test_high_frecuency_small_interval(self):
+        operation_example = json.load(
+            open('tests/text_examples/test_example_input_5.txt')
+        )
+        operations_validator = OperationsValidator()
+        operations_validator.validate_operations(operations=operation_example)
+        logs = operations_validator.actions_log
+        self.assertEqual(
+            '{"account": {"active-card": true, "available-limit": 100}, "violations": []}',
+            str(logs[0])
+        )
+        self.assertEqual(
+            '{"account": {"active-card": true, "available-limit": 80}, "violations": []}',
+            str(logs[1])
+        )
+        self.assertEqual(
+            '{"account": {"active-card": true, "available-limit": 60}, "violations": []}',
+            str(logs[2])
+        )
+        self.assertEqual(
+            '{"account": {"active-card": true, "available-limit": 40}, "violations": []}',
+            str(logs[3])
+        )
+        self.assertEqual(
+            '{"account": {"active-card": true, "available-limit": 40}, "violations": ["high-frequency-small-interval"]}',
+            str(logs[4])
+        )
+        self.assertEqual(
+            '{"account": {"active-card": true, "available-limit": 30}, "violations": []}',
+            str(logs[5])
         )

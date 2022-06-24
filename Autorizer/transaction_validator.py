@@ -108,11 +108,11 @@ class TransactionValidator(Validator):
             recent_time=self.transaction.time,
             time_lapse=self.hight_frecuency_interval
         )
-        if not historic_success_transactions_in_lapse_time:
-            return True
-        else:
-            self._account_operation.add_violation(HIGH_FRECUENCY_SMALL_INTERVAL)
-            return False
+        if historic_success_transactions_in_lapse_time:
+           if len(historic_success_transactions_in_lapse_time) >= self.hight_frecuency_interval_transactions:
+                self._account_operation.add_violation(HIGH_FRECUENCY_SMALL_INTERVAL)
+                return False
+        return True
 
     def in_limit_to_not_dobled_transaction(self)->bool:
         """

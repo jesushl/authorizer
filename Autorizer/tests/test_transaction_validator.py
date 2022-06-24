@@ -65,8 +65,10 @@ class TestTransactionValidator(TestCase):
         t1.applied = True
         t2 = Transaction(time=now + timedelta(seconds=10))
         t2.applied = True
+        t2_1 = Transaction(time=now + timedelta(seconds=10))
+        t2_1.applied = True
         t3 = Transaction(time=now + timedelta(seconds=20))
-        historic = [t1, t2]
+        historic = [t1, t2, t2_1]
         transaction_validator._account_operation = transaction_validator.account.metadata_copy()
         transaction_validator.set_historic_transactions(historic)
         transaction_validator.set_transaction(t3)
@@ -74,7 +76,7 @@ class TestTransactionValidator(TestCase):
         t3.time = now + timedelta(minutes=2)
         self.assertFalse(transaction_validator.in_limit_for_hight_frecuency_interval())
         t3.time = now + timedelta(minutes=2, seconds=10)
-        self.assertFalse(transaction_validator.in_limit_for_hight_frecuency_interval())
+        self.assertTrue(transaction_validator.in_limit_for_hight_frecuency_interval())
         t3.time = now + timedelta(minutes=2, seconds=11)
         self.assertTrue(transaction_validator.in_limit_for_hight_frecuency_interval())
         transaction_validator.set_historic_transactions([])
