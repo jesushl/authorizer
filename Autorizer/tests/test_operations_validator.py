@@ -56,3 +56,11 @@ class TestOperationsValidator(TestCase):
             '{"account": {"active-card": true, "available-limit": 175}, "violations": ["account-already-initialized"]}',
             str(logs[1])
         )
+
+    def test_validate_card_not_active(self):
+        operation_example = json.load(
+            open('tests/text_examples/test_example_input_3.txt')
+        )
+        operations_validator = OperationsValidator()
+        operations_validator.validate_operations(operations=operation_example)
+        logs = operations_validator.actions_log
