@@ -16,14 +16,15 @@ class Account:
             active_card=self.active_card, 
             available_limit=self.available_limit
         )
+        return _copy_account_metadata
 
     def initialize(self):
-        self.initialize = True
+        self.initialized = True
 
     def add_violation(self, violation:str)->None:
         self.violations.append(violation)
         
-    def disbursment(self, amount) -> boolean:
+    def disbursment(self, amount) -> bool:
         if amount > self.available_limit:
             return False
         elif (

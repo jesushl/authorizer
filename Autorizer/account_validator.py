@@ -7,8 +7,11 @@ ACCOUNT_ALREADY_INITIALIZED = "account-already-initialized"
 class AccountValidator(Validator):
     def __init__(self):
         super().__init__()
-        self.account: Account = None
+        self.account: Account = Account()
         self.meta_account = None # transitory object to get log messages
+    
+    def set_account(self, account: Account):
+        self.account = account
 
     def verify(self):
         """

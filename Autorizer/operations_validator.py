@@ -54,4 +54,5 @@ class OperationsValidator():
         self.actions_log.append(_account_operation)
 
     def validate_account(self, account: dict):
-        pass
+        self.account_validator.account = self.transaction_validator.account
+            
