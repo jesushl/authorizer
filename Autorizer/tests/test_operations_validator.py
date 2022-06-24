@@ -132,3 +132,31 @@ class TestOperationsValidator(TestCase):
             '{"account": {"active-card": true, "available-limit": 30}, "violations": []}',
             str(logs[5])
         )
+    
+    def test_doubled_transaction(self):
+        operation_example = json.load(
+            open('tests/text_examples/test_example_input_6.txt')
+        )
+        operations_validator = OperationsValidator()
+        operations_validator.validate_operations(operations=operation_example)
+        logs = operations_validator.actions_log
+        self.assertEqual(
+            '{"account": {"active-card": true, "available-limit": 100}, "violations": []}',
+            str(logs[0])
+        )
+        self.assertEqual(
+            '{"account": {"active-card": true, "available-limit": 80}, "violations": []}',
+            str(logs[1])
+        )
+        self.assertEqual(
+            '{"account": {"active-card": true, "available-limit": 70}, "violations": []}',
+            str(logs[2])
+        )
+        self.assertEqual(
+            '{"account": {"active-card": true, "available-limit": 70}, "violations": ["doubled-transaction"]}',
+            str(logs[3])
+        )
+        self.assertEqual(
+            '{"account": {"active-card": true, "available-limit": 55}, "violations": []}',
+            str(logs[4])
+        )
