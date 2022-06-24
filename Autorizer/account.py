@@ -3,6 +3,7 @@ class Account:
         self.active_card = active_card
         self.available_limit = available_limit
         self.violations = []
+        self.initialized = False
 
     def add_violations(self, violation:str)->None:
         self.violations.append(violation)
@@ -18,9 +19,12 @@ class Account:
             self.available_limit = self.available_limit - amount
 
     def __repr__(self) -> str:
-        return """
-            active: {self.active_card}
-            limit: {self.available_limit}
-            """.format(
-            self=self
-        )
+        if self.initialized:
+            _ =  """
+                active: {self.active_card}
+                limit: {self.available_limit}
+                """.format(
+                self=self
+            )
+        else:
+            _ = '/{/}'
