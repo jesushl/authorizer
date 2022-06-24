@@ -23,35 +23,35 @@ class OperationsValidator():
         self.kind_transction = "transaction"
         self.kind_account = "account"
         self.date_format = "%Y-%m-%dT%H:%M:%S.%fZ" 
+        self.actions_log = []
 
     def validate_operations(self, operations: list):
-        actions_applied = []
         for operation in operations:
-            # transactions should be the most common operation
-            transaction = operation.get(self.kind_transction, None)
-            if transaction:
-                c_time = datetime.strptime(
-                    transaction.get("time"),
-                    self.date_format
-                )
-                c_transaction = Transaction(
-                    merchant=transaction.get("merchant", ""),
-                    amount=transaction.get("amount"),
-                    time=c_time
-                )
-                self.transaction_validator.set_transaction(c_transaction)
-                self.transaction_validator.verify()
-                actions_applied.append(c_transaction)
-            else:
-                account = operation.get(self.kind_account, None)
-                if account:
-                    pass 
-                else:
-                    pass          
-            
+            pass 
+
+    def validate_operation(self, operation: dict):
+        transaction = operation.get(self.kind_transction, None)
+        if transaction:
+            self.validate_transaction(transaction)
+        else:
+            account = operation.get(self.kind_account, None)
             if account:
-                c_account = Account(
-                    active_card=account.get("active-card", False),
-                    available_limit=account.get("available-limit", -1)
-                )
-            else:
+                self.validate_account(account)
+
+
+    def validate_transaction(self, transaction: dict):
+        c_time = datetime.strptime(
+                transaction.get("time"),
+                self.date_format
+            )
+        c_transaction = Transaction(
+            merchant=transaction.get("merchant", ""),
+            amount=transaction.get("amount"),
+            time=c_time
+        )
+        self.transaction_validator.set_transaction(c_transaction)
+        _account_operation = self.transaction_validator.verify()
+        self.actions_log.append(_account_operation)
+
+    def validate_account(self, account: dict):
+        pass

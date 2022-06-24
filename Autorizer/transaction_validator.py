@@ -37,15 +37,20 @@ class TransactionValidator(Validator):
         _in_limit_to_not_dobled_transaction = threading.Thread(
             target=self.in_limit_to_not_dobled_transaction
         )
+        _has_initialized_account = threading.Thread(
+            target=self.has_initialized_account
+        )
         _is_card_active.start()
         _in_limit.start()
         _in_limit_for_hight_frecuency_interval.start()
         _in_limit_to_not_dobled_transaction.start()
-       
+        _has_initialized_account.start()
+
         _is_card_active.join()
         _in_limit.join()
         _in_limit_for_hight_frecuency_interval.join()
         _in_limit_to_not_dobled_transaction.join()
+        _has_initialized_account.join()
         return self._account_operation
 
     def set_account(self, account: Account):
@@ -136,3 +141,6 @@ class TransactionValidator(Validator):
                 return True
             transaction_index = transaction_index - 1
         return True
+
+    def get_current_account_operation(self):
+        return self._account_operation
