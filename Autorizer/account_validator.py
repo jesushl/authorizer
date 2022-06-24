@@ -1,8 +1,9 @@
 from validator import Validator
 from account import Account
 
-# Account validation messages
+# Account Violation messages
 ACCOUNT_NOT_INITIALIZED="account-not-initialized"
+CARD_NOT_ACTIVE = "card-not-active"
 
 class AccountValidator(Validator):
     def __init__(self):
@@ -33,3 +34,10 @@ class AccountValidator(Validator):
                 return True 
         self.account.add_violation(ACCOUNT_NOT_INITIALIZED)
         return False
+
+    def is_active(self):
+        if self.account.active_card:
+           return True
+        else:
+            self.account.add_violation(CARD_NOT_ACTIVE)
+            return False 

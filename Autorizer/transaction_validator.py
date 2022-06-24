@@ -20,6 +20,7 @@ class TransactionValidator(Validator):
     def __init__(self):
         super().__init__()
         self.account: Account = None
+        self._account_operation = None
         self.transaction: Transaction = None
         self.historic_transactions: list = []
         self.hight_frecuency_interval: timedelta = timedelta(minutes=2)
@@ -27,6 +28,7 @@ class TransactionValidator(Validator):
         self.dobled_transaction_interval: timedelta = timedelta(minutes=2)
 
     def verify(self):
+        self._account_operation = self.account.metadata_copy()
         _is_card_active = threading.Thread(target=self.is_card_active)
         _in_limit = threading.Thread(self.is_card_active)
         _in_limit_for_hight_frecuency_interval = threading.Thread(
@@ -44,7 +46,7 @@ class TransactionValidator(Validator):
         _in_limit.join()
         _in_limit_for_hight_frecuency_interval.join()
         _in_limit_to_not_dobled_transaction.join()
-      
+        return self._account_operation
 
     def set_account(self, account: Account):
         if self.account:
@@ -67,7 +69,7 @@ class TransactionValidator(Validator):
                     if not self.transaction.account:
                         self.transaction.account = self.account
                 return True
-        self.transaction.add_violation(
+        self._account_operation.add_violation(
             ACCOUNT_NOT_INITIALIZED
         )
         return False
@@ -76,13 +78,13 @@ class TransactionValidator(Validator):
         if self.account:
             if self.account.active_card:
                 return True
-        self.transaction.add_violation(CARD_NOT_ACTIVE)
+        self._account_operation.add_violation(CARD_NOT_ACTIVE)
         return False
 
     def is_in_limit(self)->bool:
         _account_balance = self.account.available_limit
         if self.transaction.amount > _account_balance:
-            self.transaction.add_violation(INSUFICIENT_LIMIT)
+            self._account_operation.add_violation(INSUFICIENT_LIMIT)
             return False
         else:
             # Making disbursment at the same time
@@ -107,7 +109,7 @@ class TransactionValidator(Validator):
             if ((_current_time - _time_laps_pass_limit) > self.hight_frecuency_interval):
                 return True
             else:
-                self.transaction.add_violation(HIGH_FRECUENCY_SMALL_INTERVAL)
+                self._account_operation.add_violation(HIGH_FRECUENCY_SMALL_INTERVAL)
                 return False
         else:
             return True
@@ -128,7 +130,7 @@ class TransactionValidator(Validator):
                     and 
                     c_transaction.amount == self.transaction.amount
                 ):  
-                    self.transaction.add_violation(DOUBLED_TRANSACTION)
+                    self._account_operation.add_violation(DOUBLED_TRANSACTION)
                     return False
             else:
                 return True

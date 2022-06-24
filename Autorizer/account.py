@@ -6,13 +6,21 @@ class Account:
         self.available_limit = available_limit
         self.violations = []
         self.initialized = False
+        # This can be fixed in a database adding a hash token
+        self.is_metadata_copy = False 
         if isinstance(active_card, bool) and isinstance(available_limit, int):
-            self.initialized()
+            self.initialize()
+    
+    def metadata_copy(self):
+        _copy_account_metadata = Account(
+            active_card=self.active_card, 
+            available_limit=self.available_limit
+        )
 
     def initialize(self):
         self.initialize = True
 
-    def add_violations(self, violation:str)->None:
+    def add_violation(self, violation:str)->None:
         self.violations.append(violation)
         
     def disbursment(self, amount) -> boolean:
