@@ -18,18 +18,22 @@ class TestAccountValidator(TestCase):
     def test_exist_a_valid_account(self):
         self.assertFalse(self.account_validator.is_valid_account())
         self.account_validator.account = self.valid_account
+        self.account_validator.meta_account = self.valid_account.metadata_copy()
         self.assertTrue(self.account_validator.is_valid_account())
 
     def test_is_already_initiated(self):
-        self.account_validator.account = None 
+        self.account_validator.account = None
+        self.account_validator.meta_account = None
         self.assertFalse(
             self.account_validator.is_already_initiated()
         )
         self.account_validator.account = self.not_initiated_account
+        self.account_validator.meta_account = self.not_initiated_account.metadata_copy()
         self.assertFalse(
             self.account_validator.is_already_initiated()
         )
         self.account_validator.account = self.valid_account
+        self.account_validator.meta_account = self.valid_account.metadata_copy()
         self.assertTrue(
             self.account_validator.is_already_initiated()
         )
