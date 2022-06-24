@@ -11,7 +11,7 @@ from validator import Validator
 
 ACCOUNT_NOT_INITIALIZED = "account-not-initialized"
 CARD_NOT_ACTIVE="card-not-active"
-INSUFICIENT_LIMIT="insuficient-limit"
+INSUFICIENT_LIMIT="insufficient-limit"
 HIGH_FRECUENCY_SMALL_INTERVAL="high-frequency-small-interval"
 DOUBLED_TRANSACTION="doubled-transaction"
 
@@ -30,7 +30,7 @@ class TransactionValidator(Validator):
     def verify(self):
         self._account_operation = self.account.metadata_copy()
         _is_card_active = threading.Thread(target=self.is_card_active)
-        _in_limit = threading.Thread(self.is_card_active)
+        _in_limit = threading.Thread(target=self.is_in_limit)
         _in_limit_for_hight_frecuency_interval = threading.Thread(
             target=self.in_limit_for_hight_frecuency_interval
        )
@@ -54,7 +54,7 @@ class TransactionValidator(Validator):
         return self._account_operation
 
     def set_account(self, account: Account):
-        if self.account:
+        if self.account.initialized:
             return False
         else:
             self.account = account
@@ -92,12 +92,7 @@ class TransactionValidator(Validator):
         if self.transaction.amount > _account_balance:
             self._account_operation.add_violation(INSUFICIENT_LIMIT)
             return False
-        else:
-            # Making disbursment at the same time
-            self.account.disbursment(
-                self.transaction.amount
-            )
-            return True
+        return True
 
     def in_limit_for_hight_frecuency_interval(self)->bool:
         """
@@ -107,8 +102,7 @@ class TransactionValidator(Validator):
             hight_frecuency_interval_transactionsal 
 
         """
-        if len(self.historic_transactions) > 1:
-            # Takes the second transaction before current one
+        if len(self.historic_transactions) >= self.hight_frecuency_interval_transactions:
             _prev_sec_transactions = self.historic_transactions[-self.hight_frecuency_interval_transactions]
             _time_laps_pass_limit = _prev_sec_transactions.time
             _current_time = self.transaction.time

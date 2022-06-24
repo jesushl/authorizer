@@ -1,6 +1,6 @@
 from time import time
 from unittest import TestCase
-from datetime import date, datetime, timedelta
+from datetime import  datetime, timedelta
 
 # Models
 from account import Account

@@ -27,11 +27,12 @@ class Account:
         if amount > self.available_limit:
             return False
         elif (
-                amount > self.available_limit 
+                amount < self.available_limit 
                 and 
                 self.active_card
             ):
             self.available_limit = self.available_limit - amount
+            return True
 
     def __repr__(self) -> str:
         _violations = '"violations": {self.violations}'.format(self=self)
@@ -41,8 +42,19 @@ class Account:
             _account_body = _active +', ' + _available_limit 
         else:
             _account_body  = '{}'
-        _account = '{"account": {' + _account_body + '}'+ ', ' + _violations + '}' 
-        return _account
+        _account = '{"account": {' + _account_body + '}'+ ', ' + _violations + '}'
+        return _account.lower().replace("\'", "\"")
+
+    def __str__(self) -> str:
+        _violations = '"violations": {self.violations}'.format(self=self)
+        if self.initialized:
+            _active = '"active-card": {self.active_card}'.format(self=self)
+            _available_limit = '"available-limit": {self.available_limit}'.format(self=self)
+            _account_body = _active +', ' + _available_limit 
+        else:
+            _account_body  = '{}'
+        _account = '{"account": {' + _account_body + '}'+ ', ' + _violations + '}'
+        return _account.lower().replace("\'", "\"")
 
 
 def account_from_dict(
