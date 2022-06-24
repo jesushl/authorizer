@@ -35,19 +35,16 @@ class TransactionValidator(Validator):
         _in_limit_to_not_dobled_transaction = threading.Thread(
             target=self.in_limit_to_not_dobled_transaction
         )
-        _is_account_initialized = threading.Thread(
-            target=self.is_account_initialized
-        )
         _is_card_active.start()
         _in_limit.start()
         _in_limit_for_hight_frecuency_interval.start()
         _in_limit_to_not_dobled_transaction.start()
-        _is_account_initialized.start()
+       
         _is_card_active.join()
         _in_limit.join()
         _in_limit_for_hight_frecuency_interval.join()
         _in_limit_to_not_dobled_transaction.join()
-        _is_account_initialized.join()
+      
 
     def set_account(self, account: Account):
         if self.account:
@@ -137,10 +134,3 @@ class TransactionValidator(Validator):
                 return True
             transaction_index = transaction_index - 1
         return True
-
-    def is_account_initialized(self)->bool:
-        if self.account:
-            if isinstance(self.account, Account):
-                return True
-        self.transaction.add_violation(ACCOUNT_NOT_INITIALIZED)
-        return False
