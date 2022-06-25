@@ -17,6 +17,26 @@ This return a line by every action as log message with this format
 ```
 {"account": {"active-card": <boolean>, "available-limit": <int_amount>}, "violations": [<str_viloation>, ...]}
 ```
+### How to run it
+
+In order to have the expected input you can add an alias to the python code like
+```
+alias operations="./operations.sh"
+``` 
+Also you can run the docker image in Authorizer/Dockerfile
+using 
+```
+docker build -t operations_jjhl Autorizer/.
+docker run  -it -did --name operations_jjhl operations_jjhl 
+```
+Can connect into the container using 
+```
+docker exec -it operations_jjhl bash
+```
+And run an example if you like 
+```
+operations < tests/text_examples/test_input_file.txt 
+```
 
 ### Rules
 * No transaction should be accepted without a properly initialized account: **account-not-initialized**
