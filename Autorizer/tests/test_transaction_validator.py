@@ -1,6 +1,6 @@
 from time import time
 from unittest import TestCase
-from datetime import date, datetime, timedelta
+from datetime import  datetime, timedelta
 
 # Models
 from account import Account
@@ -30,21 +30,25 @@ class TestTransactionValidator(TestCase):
 
     def test_has_inizialized_account(self):
         transaction_validator = TransactionValidator()
+        transaction_validator._account_operation = transaction_validator.account.metadata_copy()
         self.assertFalse(transaction_validator.has_initialized_account())
-        transaction_validator.set_account(self.valid_account)
+        transaction_validator.account=self.valid_account
         self.assertTrue(transaction_validator.has_initialized_account())
 
     def test_is_card_active(self):
         transaction_validator = TransactionValidator()
+        transaction_validator._account_operation = transaction_validator.account.metadata_copy()
         self.assertFalse(transaction_validator.is_card_active())
-        transaction_validator.set_account(self.second_not_valid_account)
+        transaction_validator.account = self.second_not_valid_account
+        transaction_validator._account_operation = transaction_validator.account.metadata_copy()
         self.assertFalse(transaction_validator.is_card_active())
         transaction_validator.account = self.valid_account
         self.assertTrue(transaction_validator.is_card_active())
 
     def test_is_in_limit(self):
-        transaction_validator = TransactionValidator()
+        transaction_validator = TransactionValidator(self.valid_account)
         # Account limit 10, transaction 10
+        transaction_validator._account_operation = transaction_validator.account.metadata_copy()
         transaction_validator.set_transaction(self.transaction_1_merchant_1)
         transaction_validator.set_account(self.valid_account)
         self.assertTrue(transaction_validator.is_in_limit())
@@ -55,13 +59,17 @@ class TestTransactionValidator(TestCase):
         self.assertFalse(transaction_validator.is_in_limit())
 
     def test_in_limit_for_hight_frecuency_interval(self):
-        transaction_validator = TransactionValidator()
+        transaction_validator = TransactionValidator(account=self.valid_account)
         now = datetime.now()
         t1 = Transaction(time=now)
+        t1.applied = True
         t2 = Transaction(time=now + timedelta(seconds=10))
+        t2.applied = True
+        t2_1 = Transaction(time=now + timedelta(seconds=10))
+        t2_1.applied = True
         t3 = Transaction(time=now + timedelta(seconds=20))
-        time_limit = transaction_validator.hight_frecuency_interval
-        historic = [t1, t2]
+        historic = [t1, t2, t2_1]
+        transaction_validator._account_operation = transaction_validator.account.metadata_copy()
         transaction_validator.set_historic_transactions(historic)
         transaction_validator.set_transaction(t3)
         self.assertFalse(transaction_validator.in_limit_for_hight_frecuency_interval())
@@ -97,7 +105,8 @@ class TestTransactionValidator(TestCase):
         t5_valid = Transaction(
             merchant=merchant_2, amount=amount_2, time=t_plus_one_minute
         )
-        transaction_validator = TransactionValidator()
+        transaction_validator = TransactionValidator(account=self.valid_account)
+        transaction_validator._account_operation = transaction_validator.account.metadata_copy()
         transaction_validator.set_historic_transactions([t1])
         transaction_validator.set_transaction(t2_not_valid)
         self.assertFalse(transaction_validator.in_limit_to_not_dobled_transaction())

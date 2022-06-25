@@ -1,26 +1,37 @@
 from validator import Validator
 from account import Account
 
+# Account Violation messages
+ACCOUNT_ALREADY_INITIALIZED = "account-already-initialized"
 
 class AccountValidator(Validator):
     def __init__(self):
         super().__init__()
-        self.account = None
+        self.account: Account = Account()
+        self.meta_account = None # transitory object to get log messages
+    
+    def set_account(self, account: Account):
+        self.account = account
+        self.meta_account = self.account.metadata_copy()
 
     def verify(self):
         """
         This method apply a list of verifications to implement
         and error messages
         """
-        validators = {self.not_exists_a_valid_account: "account-not-initialized"}
-        for validator in validators:
-            _ = validator()
-            if _:
-                self.violations.append(validators[validator])
-        return self.violations
+        self.meta_account = self.account.metadata_copy()
+        self.is_already_initiated()
+        return self.meta_account
 
-    def not_exists_a_valid_account(self):
-        if self.account:
-            if isinstance(self.account, Account):
-                return False
-        return True
+    def is_valid_account(self):
+        if self.meta_account:
+            if isinstance(self.meta_account, Account):
+                return True
+        return False
+
+    def is_already_initiated(self):
+        if self.is_valid_account():
+            if self.meta_account.initialized:
+                self.meta_account.add_violation(ACCOUNT_ALREADY_INITIALIZED)
+                return True 
+        return False

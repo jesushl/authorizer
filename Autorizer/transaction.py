@@ -6,7 +6,6 @@ from datetime import datetime
 # models
 from account import Account
 
-
 class Transaction:
     def __init__(
         self, merchant: str = "", amount: int = 0, time: datetime = datetime.now()
@@ -15,6 +14,11 @@ class Transaction:
         self.amount = amount
         self.time = time
         self.account = None
+        self.applied = False
+        self.violations = []
+
+    def add_violation(self, violation: str)->None:
+        self.violations.append(violation)
 
     def set_account(self, account: Account):
         self.account = account
